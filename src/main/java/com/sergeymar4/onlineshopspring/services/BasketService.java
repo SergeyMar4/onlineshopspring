@@ -1,5 +1,9 @@
 package com.sergeymar4.onlineshopspring.services;
 
+import com.sergeymar4.onlineshopspring.dto.BasketDTO;
+import com.sergeymar4.onlineshopspring.dto.BasketMapper;
+import com.sergeymar4.onlineshopspring.dto.CustomerMapper;
+import com.sergeymar4.onlineshopspring.dto.ShopMapper;
 import com.sergeymar4.onlineshopspring.models.Basket;
 import com.sergeymar4.onlineshopspring.models.Product;
 import com.sergeymar4.onlineshopspring.repositories.BasketRepository;
@@ -23,18 +27,33 @@ public class BasketService {
     @Autowired
     private ShopRepository shopRepository;
 
-    public List<Basket> getAll() {
-        return basketRepository.findAll();
+    public List<BasketDTO> getAll() {
+        List<Basket> baskets = basketRepository.findAll();
+        List<BasketDTO> basketDTOList = new ArrayList<>();
+
+        for (Basket basket : baskets) {
+            basketDTOList.add(BasketMapper.toDTO(basket));
+        }
+
+        return basketDTOList;
     }
 
-    public Basket getById(Long id) {
-        return basketRepository.findById(id).get();
+    public BasketDTO getById(Long id) {
+        BasketDTO basketDTO = null;
+
+        try {
+            basketDTO = BasketMapper.toDTO(basketRepository.findById(id).orElseThrow(() -> new RuntimeException("Не найдено")));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return basketDTO;
     }
 
-    public void create(Basket basket) {
-        basket.setCustomer(customerRepository.findById(basket.getCustomer().getId()).get());
-        basket.setShop(shopRepository.findById(basket.getShop().getId()).get());
-        basketRepository.save(basket);
+    public void create(BasketDTO basketDTO) {
+        basketDTO.setCustomer(CustomerMapper.toDTO(customerRepository.findById(basketDTO.getCustomerDTO().getId()).get()));
+        basketDTO.setShop(ShopMapper.toDTO(shopRepository.findById(basketDTO.getShopDTO().getId()).get()));
+        basketRepository.save(BasketMapper.toEntity(basketDTO));
     }
 
     public void update(Basket basket) {

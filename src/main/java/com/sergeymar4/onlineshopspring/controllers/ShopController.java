@@ -1,8 +1,10 @@
 package com.sergeymar4.onlineshopspring.controllers;
 
-import com.sergeymar4.onlineshopspring.models.Shop;
+import com.sergeymar4.onlineshopspring.dto.ShopDTO;
 import com.sergeymar4.onlineshopspring.services.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,27 +16,33 @@ public class ShopController {
     private ShopService shopService;
 
     @GetMapping
-    public List<Shop> getAll() {
-        return shopService.getAll();
+    public ResponseEntity<?> getAll() {
+        return new ResponseEntity<>(shopService.getAll(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public Shop getById(@PathVariable Long id) {
-        return shopService.getById(id);
+    public ResponseEntity<?> getById(@PathVariable Long id) {
+        return new ResponseEntity<>(shopService.getById(id), HttpStatus.OK);
     }
 
     @PostMapping
-    public void create(@RequestBody Shop shop) {
+    public ResponseEntity<?> create(@RequestBody ShopDTO shop) {
         shopService.create(shop);
+
+        return new ResponseEntity<>("Объект успешно создан", HttpStatus.CREATED);
     }
 
     @PutMapping
-    public void update(@RequestBody Shop shop) {
+    public ResponseEntity<?> update(@RequestBody ShopDTO shop) {
         shopService.update(shop);
+
+        return new ResponseEntity<>("Объект успешно обновлён", HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<?> delete(@PathVariable Long id) {
         shopService.delete(id);
+
+        return new ResponseEntity<>("Объект успешно удалён", HttpStatus.OK);
     }
 }
